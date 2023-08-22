@@ -1,18 +1,18 @@
-import typer
 from pathlib import Path
 
+import typer
 
 app = typer.Typer()
 
 
 @app.command()
 def to(resolution: tuple[int, int], filename: Path):
-    print(f'{resolution} {filename}')
+    print(f"{resolution} {filename}")
 
 
 @app.command()
 def by(factor: float, filename: Path):
-    print(f'{factor} {filename}')
+    print(f"{factor} {filename}")
 
 
 def command():
