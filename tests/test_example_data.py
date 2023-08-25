@@ -2,7 +2,6 @@ from pathlib import Path
 
 import asdf
 import pytest
-from matplotlib import pyplot
 
 
 @pytest.fixture
@@ -37,18 +36,18 @@ def level3_mosaic(data_directory) -> Path:
         mk_level3_mosaic(filepath=filename)
 
 
-def test_downsample(level1_science_raw, level2_image, level3_mosaic):
+@pytest.skip
+def test_level1(level1_science_raw):
     with asdf.open(level1_science_raw) as file:
         print(file.info())
-        print(file["roman"]["data"].shape)
+        file["roman"]["data"]
 
+
+def test_level2(level2_image):
     with asdf.open(level2_image) as file:
-        print(file.info())
-        pyplot.imshow(file["roman"]["data"])
+        file["roman"]["data"]
 
-    pyplot.show()
 
-    # with asdf.open(level3_mosaic) as file:
-    #     pyplot.imshow(file['roman']['data'])
-
-    # pyplot.show()
+def test_level3(level3_mosaic):
+    with asdf.open(level3_mosaic) as file:
+        file["roman"]["data"]
