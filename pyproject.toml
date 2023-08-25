@@ -31,7 +31,7 @@ test = [
 'repository' = 'https://github.com/spacetelescope/stpreview.git'
 
 [project.scripts]
-'stpreview' = 'stpreview.__main__:command'
+'downsample' = 'stpreview.__main__:command'
 
 [build-system]
 requires = [
