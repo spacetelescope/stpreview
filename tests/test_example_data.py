@@ -36,7 +36,6 @@ def level3_mosaic(data_directory) -> Path:
         mk_level3_mosaic(filepath=filename)
 
 
-@pytest.skip
 def test_level1(level1_science_raw):
     with asdf.open(level1_science_raw) as file:
         print(file.info())
