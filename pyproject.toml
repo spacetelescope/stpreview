@@ -70,3 +70,8 @@ exclude = [
     'build',
 ]
 ignore = []
+
+[tool.pytest.ini_options]
+markers = [
+    "shareddata: run tests with shared data"
+]
