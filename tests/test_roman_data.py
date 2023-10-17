@@ -5,6 +5,9 @@ import pytest
 from stpreview.downsample import downsample_asdf
 
 DATA_DIRECTORY = Path(__file__).parent / "data"
+if not DATA_DIRECTORY.exists():
+    DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
+
 SHARED_DATA_DIRECTORY = Path("/grp/roman/TEST_DATA/23Q4_B11/aligntest")
 
 
