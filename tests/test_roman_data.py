@@ -65,7 +65,9 @@ def test_dummy_data(filename, shape):
         (filename, 3 if "uncal" in str(filename) else 2)
         for filename in SHARED_DATA_DIRECTORY.iterdir()
         if filename.suffix.lower() == ".asdf"
-    ],
+    ]
+    if SHARED_DATA_DIRECTORY.exists()
+    else [],
 )
 def test_sample_data(filename, shape):
     result = downsample_asdf(filename, by=2)
