@@ -2,7 +2,7 @@
 name = "stpreview"
 description = "build downsampled previews of space telescope products"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = { file = "LICENSE" }
 authors = [{ name = "Zach Burnett", email = "zburnett@stsci.edu" }]
 classifiers = [
