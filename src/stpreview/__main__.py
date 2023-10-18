@@ -1,35 +1,26 @@
 from pathlib import Path
 
 import asdf
-import numpy
 import typer
 
-from stpreview.downsample import asdf_observatory, downsample_asdf
+from stpreview.downsample import downsample_asdf_by, downsample_asdf_to
 
 app = typer.Typer()
 
 
 @app.command()
-def to(resolution: tuple[int, int], input: Path, output: Path, observatory: str = None):
-    if observatory is None:
-        observatory = asdf_observatory(input)
-
-    with asdf.open(input) as file:
-        factor = tuple(
-            numpy.ceil(
-                numpy.array(file[observatory]["data"].shape) / numpy.array(resolution)
-            ).astype(int)
-        )
-
-    data = downsample_asdf(input=input, by=factor)
+def downsample_to(
+    resolution: tuple[int, int], input: Path, output: Path, observatory: str = None
+):
+    data = downsample_asdf_to(resolution, input, observatory)
 
     with asdf.open(output, mode="rw") as file:
         file.write(data)
 
 
 @app.command()
-def by(factor: tuple[int, int], input: Path, output: Path):
-    data = downsample_asdf(input=input, by=factor)
+def downsample_by(factor: tuple[int, int], input: Path, output: Path):
+    data = downsample_asdf_by(input=input, by=factor)
 
     with asdf.open(output, mode="rw") as file:
         file.write(data)
