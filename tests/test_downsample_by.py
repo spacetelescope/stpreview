@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import asdf
 import pytest
 
-from stpreview.downsample import downsample_asdf
+from stpreview.downsample import downsample_asdf_by
+
+OBSERVATORY = "roman"
 
 DATA_DIRECTORY = Path(__file__).parent / "data"
 if not DATA_DIRECTORY.exists():
@@ -42,17 +45,30 @@ def level3_mosaic(data_directory) -> Path:
 
 
 @pytest.mark.parametrize(
-    "filename,shape",
+    "filename",
     [
-        (level1_science_raw(DATA_DIRECTORY), 3),
-        (level2_image(DATA_DIRECTORY), 2),
-        (level3_mosaic(DATA_DIRECTORY), 2),
+        level1_science_raw(DATA_DIRECTORY),
+        level2_image(DATA_DIRECTORY),
+        level3_mosaic(DATA_DIRECTORY),
     ],
 )
-def test_dummy_data(filename, shape):
-    result = downsample_asdf(filename, by=2)
+@pytest.mark.parametrize(
+    "by",
+    [2, 4],
+)
+def test_dummy_data(filename, by):
+    with asdf.open(filename) as file:
+        shape = file[OBSERVATORY]["data"].shape
 
-    assert len(result.shape) == shape
+    downsampled_shape = tuple(
+        dimension if index < len(shape) - 2 else int(dimension / by)
+        for index, dimension in enumerate(shape)
+    )
+    assert shape != downsampled_shape
+
+    result = downsample_asdf_by(filename, by=by)
+
+    assert result.shape == downsampled_shape
 
 
 @pytest.mark.shareddata
@@ -60,16 +76,29 @@ def test_dummy_data(filename, shape):
     not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory"
 )
 @pytest.mark.parametrize(
-    "filename,shape",
+    "filename",
     [
-        (filename, 3 if "uncal" in str(filename) else 2)
+        filename
         for filename in SHARED_DATA_DIRECTORY.iterdir()
         if filename.suffix.lower() == ".asdf"
     ]
     if SHARED_DATA_DIRECTORY.exists()
     else [],
 )
-def test_sample_data(filename, shape):
-    result = downsample_asdf(filename, by=2)
+@pytest.mark.parametrize(
+    "by",
+    [2, 4],
+)
+def test_sample_data(filename, by):
+    with asdf.open(filename) as file:
+        shape = file[OBSERVATORY]["data"].shape
 
-    assert len(result.shape) == shape
+    downsampled_shape = tuple(
+        dimension if index < len(shape) - 2 else int(dimension / by)
+        for index, dimension in enumerate(shape)
+    )
+    assert shape != downsampled_shape
+
+    result = downsample_asdf_by(filename, by=by)
+
+    assert result.shape == downsampled_shape
