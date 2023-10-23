@@ -54,14 +54,14 @@ def level3_mosaic(data_directory) -> Path:
 )
 @pytest.mark.parametrize(
     "by",
-    [2, 3, 4],
+    [2, 4],
 )
 def test_dummy_data(filename, by):
     with asdf.open(filename) as file:
         shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else int(dimension / 2)
+        dimension if index < len(shape) - 2 else int(dimension / by)
         for index, dimension in enumerate(shape)
     )
     assert shape != downsampled_shape
@@ -87,14 +87,14 @@ def test_dummy_data(filename, by):
 )
 @pytest.mark.parametrize(
     "by",
-    [2, 3, 4],
+    [2, 4],
 )
 def test_sample_data(filename, by):
     with asdf.open(filename) as file:
         shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else int(dimension / 2)
+        dimension if index < len(shape) - 2 else int(dimension / by)
         for index, dimension in enumerate(shape)
     )
     assert shape != downsampled_shape

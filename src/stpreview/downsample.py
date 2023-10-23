@@ -32,7 +32,7 @@ def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
 
 def downsample_asdf_by(
     input: Path,
-    by: Union[int, tuple[int, int]],
+    by: Union[int, numpy.ndarray],
     func=numpy.max,
     observatory: str = None,
 ) -> numpy.ndarray:
@@ -50,11 +50,18 @@ def downsample_asdf_by(
         observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
-        data = file[observatory]["data"]
+        data = file[observatory]["data"].copy()
 
-    block_size = tuple(
-        1 if index < len(data.shape) - 2 else by for index in range(len(data.shape))
-    )
+    if isinstance(by, int):
+        block_size = tuple(
+            1 if index < len(data.shape) - 2 else by for index in range(len(data.shape))
+        )
+    else:
+        block_size = by
+
+    for index, dimension in enumerate(data.shape):
+        if dimension % block_size[index] != 0:
+            raise RuntimeError(f"{by} is not an even factor of {data.shape}")
 
     return block_reduce(data, block_size=block_size, func=func)
 
@@ -76,10 +83,12 @@ def downsample_asdf_to(
         observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
-        factor = tuple(
+        factor = (
             numpy.ceil(
                 numpy.array(file[observatory]["data"].shape) / numpy.array(resolution)
-            ).astype(int)
+            )
+            .astype(int)
+            .totuple()
         )
 
     return downsample_asdf_by(input=input, by=factor, func=func)
