@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 
 import asdf
 import numpy
@@ -7,9 +8,20 @@ from skimage.measure import block_reduce
 OBSERVATORIES = ["roman", "jwst"]
 
 
-def asdf_observatory(input: Path) -> str:
+def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
+    """
+    find which observatory key exists in the given ASDF file
+
+    :param input: ASDF file
+    :param known: list of known observatory keys
+    :returns: first observatory to be found in the file
+    """
+
+    if known is None:
+        known = OBSERVATORIES
+
     with asdf.open(input) as file:
-        for name in OBSERVATORIES:
+        for name in known:
             if name in file:
                 return name
         else:
@@ -19,7 +31,10 @@ def asdf_observatory(input: Path) -> str:
 
 
 def downsample_asdf_by(
-    input: Path, by: int, func=numpy.max, observatory: str = None
+    input: Path,
+    by: Union[int, tuple[int, int]],
+    func=numpy.max,
+    observatory: str = None,
 ) -> numpy.ndarray:
     """
     downsample an ASDF image by the specified factor
@@ -32,7 +47,7 @@ def downsample_asdf_by(
     """
 
     if observatory is None:
-        observatory = asdf_observatory(input)
+        observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
         data = file[observatory]["data"]
@@ -58,7 +73,7 @@ def downsample_asdf_to(
     """
 
     if observatory is None:
-        observatory = asdf_observatory(input)
+        observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
         factor = tuple(

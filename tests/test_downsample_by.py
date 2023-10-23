@@ -60,12 +60,14 @@ def test_dummy_data(filename, by):
     with asdf.open(filename) as file:
         shape = file[OBSERVATORY]["data"].shape
 
-    result = downsample_asdf_by(filename, by=by)
-
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else dimension / 2
+        dimension if index < len(shape) - 2 else int(dimension / 2)
         for index, dimension in enumerate(shape)
     )
+    assert shape != downsampled_shape
+
+    result = downsample_asdf_by(filename, by=by)
+
     assert result.shape == downsampled_shape
 
 
@@ -91,10 +93,12 @@ def test_sample_data(filename, by):
     with asdf.open(filename) as file:
         shape = file[OBSERVATORY]["data"].shape
 
-    result = downsample_asdf_by(filename, by=by)
-
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else dimension / 2
+        dimension if index < len(shape) - 2 else int(dimension / 2)
         for index, dimension in enumerate(shape)
     )
+    assert shape != downsampled_shape
+
+    result = downsample_asdf_by(filename, by=by)
+
     assert result.shape == downsampled_shape
