@@ -59,15 +59,15 @@ def downsample_asdf_by(
     else:
         block_size = by
 
-    for index, dimension in enumerate(data.shape):
-        if dimension % block_size[index] != 0:
-            raise RuntimeError(f"{by} is not an even factor of {data.shape}")
+    # for index, dimension in enumerate(data.shape):
+    #     if dimension % block_size[index] != 0:
+    #         raise RuntimeError(f"{by} is not an even factor of {data.shape}")
 
     return block_reduce(data, block_size=block_size, func=func)
 
 
 def downsample_asdf_to(
-    resolution: tuple[int, int], input: Path, func=numpy.max, observatory: str = None
+    input: Path, to: tuple[int, int], func=numpy.max, observatory: str = None
 ) -> numpy.ndarray:
     """
     attempt to downsample an ASDF image to (near) the specified resolution
@@ -83,12 +83,10 @@ def downsample_asdf_to(
         observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
-        factor = (
+        factor = tuple(
             numpy.ceil(
-                numpy.array(file[observatory]["data"].shape) / numpy.array(resolution)
-            )
-            .astype(int)
-            .totuple()
+                numpy.array(file[observatory]["data"].shape) / numpy.array(to)
+            ).astype(int)
         )
 
     return downsample_asdf_by(input=input, by=factor, func=func)
