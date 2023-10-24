@@ -64,8 +64,13 @@ def write_image(
 
 
 @app.command()
-def by(input: Path, output: Path, factor: tuple[int, int]):
-    data = downsample_asdf_by(input=input, factor=factor)
+def by(input: Path, output: Path, factor: list[int]):
+    if len(factor) == 1:
+        parsed_factor = factor[0]
+    else:
+        parsed_factor = tuple(factor)
+
+    data = downsample_asdf_by(input=input, factor=parsed_factor)
 
     write_image(data, output)
 

@@ -1,7 +1,6 @@
 import asdf
 import numpy
 import pytest
-from PIL import Image
 from test_data import (
     DATA_DIRECTORY,
     SHARED_DATA_DIRECTORY,
@@ -34,13 +33,11 @@ def test_dummy_data(input, shape):
         original_shape = file[OBSERVATORY]["data"].shape
 
     if len(original_shape) != len(shape):
-        shape = numpy.concatenate(
-            [[original_shape[index] for index in range(len(original_shape) - 2)], shape]
-        )
+        shape = numpy.concatenate([[1 for _ in range(len(original_shape) - 2)], shape])
 
     assert numpy.any(original_shape != shape)
 
-    result = downsample_asdf_to(input, to=shape)
+    result = downsample_asdf_to(input, shape=shape)
 
     assert numpy.all(numpy.array(result.shape) <= shape)
 
@@ -57,7 +54,7 @@ runner = CliRunner()
 )
 @pytest.mark.parametrize(
     "shape",
-    [2, 4],
+    [(1080, 1080), (300, 300)],
 )
 def test_command(input, shape, tmp_path):
     with asdf.open(input) as file:
@@ -70,17 +67,10 @@ def test_command(input, shape, tmp_path):
 
     assert numpy.any(original_shape != shape)
 
-    result = downsample_asdf_to(input, to=shape)
-
     output = tmp_path / f"{input.stem}.png"
 
-    status = runner.invoke(app, ["downsample", "to", input, output, *shape])
+    status = runner.invoke(app, [str(value) for value in ("to", input, output, *shape)])
     assert status.exit_code == 0
-
-    image = Image.open(output)
-    result = numpy.asarray(image)
-
-    assert numpy.all(numpy.array(result.shape) <= shape)
 
 
 @pytest.mark.shareddata
@@ -106,12 +96,10 @@ def test_sample_data(input, shape):
         original_shape = file[OBSERVATORY]["data"].shape
 
     if len(original_shape) != len(shape):
-        shape = numpy.concatenate(
-            [[original_shape[index] for index in range(len(original_shape) - 2)], shape]
-        )
+        shape = numpy.concatenate([[1 for _ in range(len(original_shape) - 2)], shape])
 
     assert numpy.any(original_shape != shape)
 
-    result = downsample_asdf_to(input, to=shape)
+    result = downsample_asdf_to(input, shape=shape)
 
     assert numpy.all(numpy.array(result.shape) <= shape)

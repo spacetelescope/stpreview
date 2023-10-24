@@ -52,20 +52,14 @@ def downsample_asdf_by(
     with asdf.open(input) as file:
         data = file[observatory]["data"].copy()
 
+    block_size = list(data.shape)
     if isinstance(factor, int):
-        block_size = tuple(
-            data.shape[index] if index < len(data.shape) - 2 else factor
-            for index in range(len(data.shape))
-        )
-    elif isinstance(factor, tuple) and len(factor) != len(data.shape):
-        block_size = tuple(
-            data.shape[index]
-            if index < len(data.shape) - 2
-            else factor[index - (len(data.shape) - 2)]
-            for index in range(len(data.shape))
-        )
+        block_size[-2] = factor
+        block_size[-1] = factor
     else:
-        block_size = factor
+        block_size[-2] = factor[0]
+        block_size[-1] = factor[1]
+    block_size = tuple(block_size)
 
     # for index, dimension in enumerate(data.shape):
     #     if dimension % block_size[index] != 0:

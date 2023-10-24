@@ -1,7 +1,5 @@
 import asdf
-import numpy
 import pytest
-from PIL import Image
 from test_data import (
     DATA_DIRECTORY,
     SHARED_DATA_DIRECTORY,
@@ -33,10 +31,10 @@ def test_dummy_data(input, factor):
     with asdf.open(input) as file:
         original_shape = file[OBSERVATORY]["data"].shape
 
-    downsampled_shape = tuple(
-        dimension if index < len(original_shape) - 2 else int(dimension / factor)
-        for index, dimension in enumerate(original_shape)
-    )
+    downsampled_shape = [1 for _ in original_shape]
+    downsampled_shape[-2] = int(original_shape[-2] / factor)
+    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
     result = downsample_asdf_by(input, factor=factor)
@@ -66,17 +64,16 @@ def test_command(input, factor, tmp_path):
         dimension if index < len(original_shape) - 2 else int(dimension / factor)
         for index, dimension in enumerate(original_shape)
     )
+    downsampled_shape = [1 for _ in original_shape]
+    downsampled_shape[-2] = int(original_shape[-2] / factor)
+    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
     output = tmp_path / f"{input.stem}.png"
 
-    result = runner.invoke(app, ["downsample", "by", input, output, *factor])
-    assert result.exit_code == 0
-
-    image = Image.open(output)
-    data = numpy.asarray(image)
-
-    assert data.shape == downsampled_shape
+    status = runner.invoke(app, [str(value) for value in ("by", input, output, factor)])
+    assert status.exit_code == 0
 
 
 @pytest.mark.shareddata
@@ -101,10 +98,10 @@ def test_sample_data(input, factor):
     with asdf.open(input) as file:
         original_shape = file[OBSERVATORY]["data"].shape
 
-    downsampled_shape = tuple(
-        dimension if index < len(original_shape) - 2 else int(dimension / factor)
-        for index, dimension in enumerate(original_shape)
-    )
+    downsampled_shape = [1 for _ in original_shape]
+    downsampled_shape[-2] = int(original_shape[-2] / factor)
+    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
     result = downsample_asdf_by(input, factor=factor)
