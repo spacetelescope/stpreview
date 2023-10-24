@@ -15,7 +15,6 @@ dependencies = [
     "asdf",
     "astropy",
     "numpy",
-    "pillow",
     "scikit-image",
     "typer",
 ]
