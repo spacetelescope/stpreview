@@ -80,15 +80,11 @@ def to(
     input: Path,
     output: Path,
     shape: tuple[int, int],
-    resolution: tuple[int, int] = None,
     observatory: str = None,
 ):
-    if resolution is None:
-        resolution = shape
-
     data = downsample_asdf_to(input=input, shape=shape, observatory=observatory)
 
-    write_image(data, output, shape=resolution)
+    write_image(data, output, shape=shape)
 
 
 def command():
