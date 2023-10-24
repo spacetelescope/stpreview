@@ -38,6 +38,7 @@ def percentile_normalization(
 def write_image(
     data: numpy.ndarray,
     output: Path,
+    shape: tuple[int, int] = None,
     normalization: ImageNormalize = None,
     colormap: Union[str, Colormap] = None,
 ):
@@ -51,26 +52,38 @@ def write_image(
     if colormap is None:
         colormap = "afmhot"
 
-    figure = pyplot.figure()
+    if shape is None:
+        shape = data.shape
+
+    dpi = 100
+    figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
     axis = figure.add_subplot(1, 1, 1)
     axis.imshow(data, norm=normalization, cmap=colormap)
-    axis.savefig(output, bbox_inches="tight")
+    pyplot.axis("off")
+    figure.savefig(output, dpi=dpi, bbox_inches="tight")
 
 
 @app.command()
-def downsample_by(input: Path, factor: tuple[int, int], output: Path):
-    data = downsample_asdf_by(input=input, by=factor)
+def by(input: Path, output: Path, factor: tuple[int, int]):
+    data = downsample_asdf_by(input=input, factor=factor)
 
     write_image(data, output)
 
 
 @app.command()
-def downsample_to(
-    input: Path, resolution: tuple[int, int], output: Path, observatory: str = None
+def to(
+    input: Path,
+    output: Path,
+    shape: tuple[int, int],
+    resolution: tuple[int, int] = None,
+    observatory: str = None,
 ):
-    data = downsample_asdf_to(resolution, input, observatory)
+    if resolution is None:
+        resolution = shape
 
-    write_image(data, output)
+    data = downsample_asdf_to(input=input, shape=shape, observatory=observatory)
+
+    write_image(data, output, shape=resolution)
 
 
 def command():

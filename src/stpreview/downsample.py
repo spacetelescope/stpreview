@@ -32,15 +32,15 @@ def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
 
 def downsample_asdf_by(
     input: Path,
-    by: Union[int, numpy.ndarray],
-    func=numpy.max,
+    factor: Union[int, tuple[int, int]],
+    func=numpy.mean,
     observatory: str = None,
 ) -> numpy.ndarray:
     """
     downsample an ASDF image by the specified factor
 
     :param input: ASDF file with 2D image data
-    :param by: factor by which to downsample image resolution
+    :param factor: factor by which to downsample image resolution
     :param func: aggregation function to pass to `skimage.measure.block_reduce`
     :param observatory: space telescope to use
     :returns: downsampled image array
@@ -52,12 +52,20 @@ def downsample_asdf_by(
     with asdf.open(input) as file:
         data = file[observatory]["data"].copy()
 
-    if isinstance(by, int):
+    if isinstance(factor, int):
         block_size = tuple(
-            1 if index < len(data.shape) - 2 else by for index in range(len(data.shape))
+            data.shape[index] if index < len(data.shape) - 2 else factor
+            for index in range(len(data.shape))
+        )
+    elif isinstance(factor, tuple) and len(factor) != len(data.shape):
+        block_size = tuple(
+            data.shape[index]
+            if index < len(data.shape) - 2
+            else factor[index - (len(data.shape) - 2)]
+            for index in range(len(data.shape))
         )
     else:
-        block_size = by
+        block_size = factor
 
     # for index, dimension in enumerate(data.shape):
     #     if dimension % block_size[index] != 0:
@@ -67,13 +75,13 @@ def downsample_asdf_by(
 
 
 def downsample_asdf_to(
-    input: Path, to: tuple[int, int], func=numpy.max, observatory: str = None
+    input: Path, shape: tuple[int, int], func=numpy.mean, observatory: str = None
 ) -> numpy.ndarray:
     """
     attempt to downsample an ASDF image to (near) the specified resolution
 
     :param input: ASDF file with 2D image data
-    :param to: resolution to which to downsample
+    :param shape: resolution to which to downsample
     :param func: aggregation function to pass to `skimage.measure.block_reduce`
     :param observatory: space telescope to use
     :returns: downsampled image array
@@ -85,8 +93,8 @@ def downsample_asdf_to(
     with asdf.open(input) as file:
         factor = tuple(
             numpy.ceil(
-                numpy.array(file[observatory]["data"].shape) / numpy.array(to)
+                numpy.array(file[observatory]["data"].shape) / numpy.array(shape)
             ).astype(int)
         )
 
-    return downsample_asdf_by(input=input, by=factor, func=func)
+    return downsample_asdf_by(input=input, factor=factor, func=func)

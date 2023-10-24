@@ -1,51 +1,24 @@
-from pathlib import Path
-
 import asdf
+import numpy
 import pytest
+from PIL import Image
+from test_data import (
+    DATA_DIRECTORY,
+    SHARED_DATA_DIRECTORY,
+    level1_science_raw,
+    level2_image,
+    level3_mosaic,
+)
+from typer.testing import CliRunner
 
+from stpreview.__main__ import app
 from stpreview.downsample import downsample_asdf_by
 
 OBSERVATORY = "roman"
 
-DATA_DIRECTORY = Path(__file__).parent / "data"
-if not DATA_DIRECTORY.exists():
-    DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
-
-SHARED_DATA_DIRECTORY = Path("/grp/roman/TEST_DATA/23Q4_B11/aligntest")
-
-
-def level1_science_raw(data_directory) -> Path:
-    filename = data_directory / "level1_science_raw.asdf"
-    if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level1_science_raw
-
-        mk_level1_science_raw(filepath=filename)
-
-    return filename
-
-
-def level2_image(data_directory) -> Path:
-    filename = data_directory / "level2_image.asdf"
-    if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level2_image
-
-        mk_level2_image(filepath=filename)
-
-    return filename
-
-
-def level3_mosaic(data_directory) -> Path:
-    filename = data_directory / "level3_mosaic.asdf"
-    if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level3_mosaic
-
-        mk_level3_mosaic(filepath=filename)
-
-    return filename
-
 
 @pytest.mark.parametrize(
-    "filename",
+    "input",
     [
         level1_science_raw(DATA_DIRECTORY),
         level2_image(DATA_DIRECTORY),
@@ -53,22 +26,57 @@ def level3_mosaic(data_directory) -> Path:
     ],
 )
 @pytest.mark.parametrize(
-    "by",
+    "factor",
     [2, 4],
 )
-def test_dummy_data(filename, by):
-    with asdf.open(filename) as file:
-        shape = file[OBSERVATORY]["data"].shape
+def test_dummy_data(input, factor):
+    with asdf.open(input) as file:
+        original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else int(dimension / by)
-        for index, dimension in enumerate(shape)
+        dimension if index < len(original_shape) - 2 else int(dimension / factor)
+        for index, dimension in enumerate(original_shape)
     )
-    assert shape != downsampled_shape
+    assert original_shape != downsampled_shape
 
-    result = downsample_asdf_by(filename, by=by)
+    result = downsample_asdf_by(input, factor=factor)
 
     assert result.shape == downsampled_shape
+
+
+runner = CliRunner()
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        level2_image(DATA_DIRECTORY),
+        level3_mosaic(DATA_DIRECTORY),
+    ],
+)
+@pytest.mark.parametrize(
+    "factor",
+    [2, 4],
+)
+def test_command(input, factor, tmp_path):
+    with asdf.open(input) as file:
+        original_shape = file[OBSERVATORY]["data"].shape
+
+    downsampled_shape = tuple(
+        dimension if index < len(original_shape) - 2 else int(dimension / factor)
+        for index, dimension in enumerate(original_shape)
+    )
+    assert original_shape != downsampled_shape
+
+    output = tmp_path / f"{input.stem}.png"
+
+    result = runner.invoke(app, ["downsample", "by", input, output, *factor])
+    assert result.exit_code == 0
+
+    image = Image.open(output)
+    data = numpy.asarray(image)
+
+    assert data.shape == downsampled_shape
 
 
 @pytest.mark.shareddata
@@ -76,7 +84,7 @@ def test_dummy_data(filename, by):
     not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory"
 )
 @pytest.mark.parametrize(
-    "filename",
+    "input",
     [
         filename
         for filename in SHARED_DATA_DIRECTORY.iterdir()
@@ -86,19 +94,19 @@ def test_dummy_data(filename, by):
     else [],
 )
 @pytest.mark.parametrize(
-    "by",
+    "factor",
     [2, 4],
 )
-def test_sample_data(filename, by):
-    with asdf.open(filename) as file:
-        shape = file[OBSERVATORY]["data"].shape
+def test_sample_data(input, factor):
+    with asdf.open(input) as file:
+        original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = tuple(
-        dimension if index < len(shape) - 2 else int(dimension / by)
-        for index, dimension in enumerate(shape)
+        dimension if index < len(original_shape) - 2 else int(dimension / factor)
+        for index, dimension in enumerate(original_shape)
     )
-    assert shape != downsampled_shape
+    assert original_shape != downsampled_shape
 
-    result = downsample_asdf_by(filename, by=by)
+    result = downsample_asdf_by(input, factor=factor)
 
     assert result.shape == downsampled_shape
