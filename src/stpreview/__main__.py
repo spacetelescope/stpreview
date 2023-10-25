@@ -87,9 +87,9 @@ def to(
     write_image(data, output, shape=shape)
 
 
-def command():
+def main():
     app()
 
 
 if __name__ == "__main__":
-    command()
+    main()

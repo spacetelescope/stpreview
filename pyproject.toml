@@ -31,7 +31,7 @@ test = [
 'repository' = 'https://github.com/spacetelescope/stpreview.git'
 
 [project.scripts]
-'downsample' = 'stpreview.__main__:command'
+'downsample' = 'stpreview.__main__:main'
 
 [build-system]
 requires = [
@@ -75,3 +75,16 @@ ignore = []
 markers = [
     "shareddata: run tests with shared data"
 ]
+
+[tool.coverage]
+run = { omit = [
+    '**/tests/*',
+] }
+report = { exclude_lines = [
+    'pragma: no cover',
+    'if self.debug:',
+    'except ImportError',
+    'raise AssertionError',
+    'raise NotImplementedError',
+    'if __name__ == "__main__":',
+] }
