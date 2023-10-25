@@ -53,12 +53,13 @@ def downsample_asdf_by(
         data = file[observatory]["data"].copy()
 
     block_size = list(data.shape)
+
     if isinstance(factor, int):
         block_size[-2] = factor
         block_size[-1] = factor
     else:
-        block_size[-2] = factor[0]
-        block_size[-1] = factor[1]
+        block_size[-2] = factor[-2]
+        block_size[-1] = factor[-1]
     block_size = tuple(block_size)
 
     # for index, dimension in enumerate(data.shape):
@@ -85,10 +86,10 @@ def downsample_asdf_to(
         observatory = known_asdf_observatory(input)
 
     with asdf.open(input) as file:
-        factor = tuple(
-            numpy.ceil(
-                numpy.array(file[observatory]["data"].shape) / numpy.array(shape)
-            ).astype(int)
-        )
+        original_shape = file[observatory]["data"].shape
+
+    factor = tuple(
+        numpy.ceil(numpy.array(original_shape) / numpy.array(shape)).astype(int)
+    )
 
     return downsample_asdf_by(input=input, factor=factor, func=func)
