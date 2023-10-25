@@ -69,7 +69,12 @@ def test_command(input, shape, tmp_path):
 
     output = tmp_path / f"{input.stem}.png"
 
-    status = runner.invoke(app, [str(value) for value in ("to", input, output, *shape)])
+    values = ["to", input, output]
+    if isinstance(shape, int):
+        values.append(shape)
+    else:
+        values.extend(shape)
+    status = runner.invoke(app, [str(value) for value in values])
     assert status.exit_code == 0
 
 

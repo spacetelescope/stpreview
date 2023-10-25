@@ -32,7 +32,7 @@ def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
 
 def downsample_asdf_by(
     input: Path,
-    factor: Union[int, tuple[int, int]],
+    factor: Union[int, tuple[int, ...]],
     func=numpy.mean,
     observatory: str = None,
 ) -> numpy.ndarray:
@@ -52,8 +52,7 @@ def downsample_asdf_by(
     with asdf.open(input) as file:
         data = file[observatory]["data"].copy()
 
-    block_size = list(data.shape)
-
+    block_size: list[int] = list(data.shape)
     if isinstance(factor, int):
         block_size[-2] = factor
         block_size[-1] = factor

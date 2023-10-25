@@ -25,15 +25,19 @@ OBSERVATORY = "roman"
 )
 @pytest.mark.parametrize(
     "factor",
-    [2, 4],
+    [2, 4, (2, 4)],
 )
 def test_dummy_data(input, factor):
     with asdf.open(input) as file:
         original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(original_shape[-2] / factor)
-    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape[-2] = int(
+        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
+    )
+    downsampled_shape[-1] = int(
+        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
+    )
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
@@ -60,19 +64,24 @@ def test_command(input, factor, tmp_path):
     with asdf.open(input) as file:
         original_shape = file[OBSERVATORY]["data"].shape
 
-    downsampled_shape = tuple(
-        dimension if index < len(original_shape) - 2 else int(dimension / factor)
-        for index, dimension in enumerate(original_shape)
-    )
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(original_shape[-2] / factor)
-    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape[-2] = int(
+        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
+    )
+    downsampled_shape[-1] = int(
+        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
+    )
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
     output = tmp_path / f"{input.stem}.png"
 
-    status = runner.invoke(app, [str(value) for value in ("by", input, output, factor)])
+    values = ["by", input, output]
+    if isinstance(factor, int):
+        values.append(factor)
+    else:
+        values.extend(factor)
+    status = runner.invoke(app, [str(value) for value in values])
     assert status.exit_code == 0
 
 
@@ -92,15 +101,19 @@ def test_command(input, factor, tmp_path):
 )
 @pytest.mark.parametrize(
     "factor",
-    [2, 4],
+    [2, 4, (2, 4)],
 )
 def test_sample_data(input, factor):
     with asdf.open(input) as file:
         original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(original_shape[-2] / factor)
-    downsampled_shape[-1] = int(original_shape[-1] / factor)
+    downsampled_shape[-2] = int(
+        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
+    )
+    downsampled_shape[-1] = int(
+        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
+    )
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 

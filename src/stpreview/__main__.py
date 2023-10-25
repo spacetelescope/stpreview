@@ -65,10 +65,7 @@ def write_image(
 
 @app.command()
 def by(input: Path, output: Path, factor: list[int]):
-    if len(factor) == 1:
-        parsed_factor = factor[0]
-    else:
-        parsed_factor = tuple(factor)
+    parsed_factor = factor[0] if len(factor) == 1 else tuple(factor)
 
     data = downsample_asdf_by(input=input, factor=parsed_factor)
 
@@ -79,12 +76,16 @@ def by(input: Path, output: Path, factor: list[int]):
 def to(
     input: Path,
     output: Path,
-    shape: tuple[int, int],
+    shape: list[int],
     observatory: str = None,
 ):
-    data = downsample_asdf_to(input=input, shape=shape, observatory=observatory)
+    parsed_shape: Union[int, tuple[int, ...]] = (
+        shape[0] if len(shape) == 1 else tuple(shape)
+    )
 
-    write_image(data, output, shape=shape)
+    data = downsample_asdf_to(input=input, shape=parsed_shape, observatory=observatory)
+
+    write_image(data, output, shape=parsed_shape)
 
 
 def main():
