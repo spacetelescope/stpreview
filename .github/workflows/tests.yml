@@ -22,9 +22,7 @@ jobs:
       envs: |
         - linux: py39-parallel
         - linux: py310-parallel
-        - linux: py311-parallel
-        - linux: py3-parallel
-        - macos: py3-parallel
-        - linux: py3-cov-parallel
+        - linux: py311-cov-parallel
           coverage: codecov
           pytest-results-summary: true
+        - macos: py311-parallel

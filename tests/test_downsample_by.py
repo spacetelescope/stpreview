@@ -58,7 +58,7 @@ runner = CliRunner()
 )
 @pytest.mark.parametrize(
     "factor",
-    [2, 4, (2, 4)],
+    [(2, 2), (4, 4), (2, 4)],
 )
 def test_command(input, factor, tmp_path):
     with asdf.open(input) as file:
@@ -101,7 +101,7 @@ def test_command(input, factor, tmp_path):
 )
 @pytest.mark.parametrize(
     "factor",
-    [2, 4, (2, 4)],
+    [(2, 2), (4, 4), (2, 4)],
 )
 def test_sample_data(input, factor):
     with asdf.open(input) as file:
