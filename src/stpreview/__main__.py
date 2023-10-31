@@ -1,109 +1,97 @@
 from pathlib import Path
-from typing import Union
+from typing import Optional
 
-import numpy
+import asdf
 import typer
-from astropy.visualization import (
-    BaseStretch,
-    ImageNormalize,
-    LinearStretch,
-    PercentileInterval,
-)
-from matplotlib import pyplot
-from matplotlib.colors import Colormap
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredDirectionArrows
+from typing_extensions import Annotated
 
-from stpreview.downsample import downsample_asdf_by, downsample_asdf_to
+from stpreview.downsample import (
+    OBSERVATORIES,
+    downsample_asdf_by,
+    downsample_asdf_to,
+    known_asdf_observatory,
+)
+from stpreview.image import north_pole_angle, write_image
 
 app = typer.Typer()
 
 
-def percentile_normalization(
-    data: numpy.ndarray, percentile: float, stretch: BaseStretch = None
-) -> ImageNormalize:
-    """
-    stretch the given data based on the given percentile
-    """
-
-    if stretch is None:
-        stretch = LinearStretch()
-
-    interval = PercentileInterval(percentile)
-    vmin, vmax = interval.get_limits(data)
-
-    normalization = ImageNormalize(vmin=vmin, vmax=vmax, stretch=stretch)
-
-    return normalization
-
-
-def write_image(
-    data: numpy.ndarray,
-    output: Path,
-    shape: tuple[int, int] = None,
-    normalization: ImageNormalize = None,
-    colormap: Union[str, Colormap] = None,
-    north_arrow_angle: float = None,
+@app.command()
+def by(
+    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
+    output: Annotated[Path, typer.Argument(help="path to output image file")],
+    factor: Annotated[
+        tuple[int, int],
+        typer.Argument(help="block size by which to downsample image data"),
+    ],
+    observatory: Annotated[
+        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
+    ] = None,
+    compass: Annotated[
+        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
+    ] = False,
 ):
     """
-    write data as an image to the given path
+    downsample the given ASDF image by the given factor
     """
 
-    if normalization is None:
-        normalization = percentile_normalization(data, percentile=90)
+    if observatory is None:
+        observatory = known_asdf_observatory(input)
 
-    if colormap is None:
-        colormap = "afmhot"
+    data = downsample_asdf_by(input=input, factor=factor, observatory=observatory)
 
-    if shape is None:
-        shape = data.shape
+    if compass:
+        with asdf.open(input) as file:
+            wcs = file[observatory]["meta"]["wcs"]
+        north_arrow_angle = north_pole_angle(wcs).degree - 90
+    else:
+        north_arrow_angle = None
 
-    dpi = 100
-    figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
-    axis = figure.add_subplot(1, 1, 1)
-    axis.imshow(data, norm=normalization, cmap=colormap)
-
-    if north_arrow_angle is not None:
-        arrow = AnchoredDirectionArrows(
-            axis.transAxes,
-            label_x="E",
-            label_y="N",
-            length=-0.15,
-            aspect_ratio=-1,
-            sep_y=-0.1,
-            sep_x=0.04,
-            angle=north_arrow_angle,
-            color="white",
-            back_length=0,
-        )
-        axis.add_artist(arrow)
-
-    pyplot.axis("off")
-    figure.savefig(output, dpi=dpi, bbox_inches="tight")
-
-
-@app.command()
-def by(input: Path, output: Path, factor: list[int]):
-    parsed_factor = factor[0] if len(factor) == 1 else tuple(factor)
-
-    data = downsample_asdf_by(input=input, factor=parsed_factor)
-
-    write_image(data, output)
+    write_image(
+        data,
+        output,
+        north_arrow_angle=north_arrow_angle,
+    )
 
 
 @app.command()
 def to(
-    input: Path,
-    output: Path,
-    shape: list[int],
-    observatory: str = None,
+    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
+    output: Annotated[Path, typer.Argument(help="path to output image file")],
+    shape: Annotated[
+        tuple[int, int], typer.Argument(help="desired pixel resolution of output image")
+    ],
+    observatory: Annotated[
+        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
+    ] = None,
+    compass: Annotated[
+        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
+    ] = False,
 ):
-    parsed_shape: Union[int, tuple[int, ...]] = (
-        shape[0] if len(shape) == 1 else tuple(shape)
+    """
+    downsample the given ASDF image to the desired shape
+
+    the output image may be smaller than the desired shape, if no even factor exists
+    """
+
+    if observatory is None:
+        observatory = known_asdf_observatory(input)
+
+    data = downsample_asdf_to(input=input, shape=shape, observatory=observatory)
+
+    if compass:
+        with asdf.open(input) as file:
+            wcs = file[observatory]["meta"]["wcs"]
+        north_arrow_angle = north_pole_angle(wcs).degree - 90
+    else:
+        north_arrow_angle = None
+
+    write_image(
+        data,
+        output,
+        shape=shape,
+        north_arrow_angle=north_arrow_angle,
     )
-
-    data = downsample_asdf_to(input=input, shape=parsed_shape, observatory=observatory)
-
-    write_image(data, output, shape=parsed_shape)
 
 
 def main():
