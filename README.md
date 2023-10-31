@@ -32,12 +32,6 @@ Options:
   --help                    Show this message and exit.
 ```
 
-```shell
-stpreview by /grp/roman/TEST_DATA/23Q4_B11/aligntest/r0000501001001001001_01101_0001_WFI01_cal.asdf docs/images/by.png 10 10
-```
-
-![by](./docs/images/by.png)
-
 #### `stpreview to`
 
 ```
@@ -60,6 +54,18 @@ Options:
                             [default: no-compass]
   --help                    Show this message and exit.
 ```
+
+### Examples
+
+##### downsample a sample Roman image by a factor of 10, and add a compass rose
+
+```shell
+stpreview by /grp/roman/TEST_DATA/23Q4_B11/aligntest/r0000501001001001001_01101_0001_WFI01_cal.asdf docs/images/by.png 10 10 --compass
+```
+
+![by](./docs/images/by.png)
+
+##### downsample a sample Roman image to within 300x300 pixels
 
 ```shell
 stpreview to /grp/roman/TEST_DATA/23Q4_B11/aligntest/r0000501001001001001_01101_0001_WFI01_cal.asdf docs/images/to.png 300 300 roman
