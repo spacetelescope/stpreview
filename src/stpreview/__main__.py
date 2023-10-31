@@ -11,6 +11,7 @@ from astropy.visualization import (
 )
 from matplotlib import pyplot
 from matplotlib.colors import Colormap
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredDirectionArrows
 
 from stpreview.downsample import downsample_asdf_by, downsample_asdf_to
 
@@ -41,6 +42,7 @@ def write_image(
     shape: tuple[int, int] = None,
     normalization: ImageNormalize = None,
     colormap: Union[str, Colormap] = None,
+    north_arrow_angle: float = None,
 ):
     """
     write data as an image to the given path
@@ -59,6 +61,22 @@ def write_image(
     figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
     axis = figure.add_subplot(1, 1, 1)
     axis.imshow(data, norm=normalization, cmap=colormap)
+
+    if north_arrow_angle is not None:
+        arrow = AnchoredDirectionArrows(
+            axis.transAxes,
+            label_x="E",
+            label_y="N",
+            length=-0.15,
+            aspect_ratio=-1,
+            sep_y=-0.1,
+            sep_x=0.04,
+            angle=north_arrow_angle,
+            color="white",
+            back_length=0,
+        )
+        axis.add_artist(arrow)
+
     pyplot.axis("off")
     figure.savefig(output, dpi=dpi, bbox_inches="tight")
 
