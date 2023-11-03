@@ -33,7 +33,7 @@ def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
 def downsample_asdf_by(
     input: Path,
     factor: Union[int, tuple[int, ...]],
-    func=numpy.mean,
+    func=numpy.nanmean,
     observatory: str = None,
 ) -> numpy.ndarray:
     """
@@ -69,7 +69,7 @@ def downsample_asdf_by(
 
 
 def downsample_asdf_to(
-    input: Path, shape: tuple[int, int], func=numpy.mean, observatory: str = None
+    input: Path, shape: tuple[int, int], func=numpy.nanmean, observatory: str = None
 ) -> numpy.ndarray:
     """
     attempt to downsample an ASDF image to (near) the specified resolution
