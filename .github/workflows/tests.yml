@@ -20,9 +20,9 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       envs: |
-        - linux: py39-parallel
         - linux: py310-parallel
         - linux: py311-cov-parallel
           coverage: codecov
           pytest-results-summary: true
         - macos: py311-parallel
+        - linux: py312-parallel
