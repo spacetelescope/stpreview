@@ -87,7 +87,7 @@ def write_image(
     dpi = 100
     figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
     axis = figure.add_subplot(1, 1, 1)
-    axis.imshow(data, norm=normalization, cmap=colormap)
+    axis.imshow(data, norm=normalization, cmap=colormap, origin='lower')
 
     if north_arrow_angle is not None:
         arrow = AnchoredDirectionArrows(
