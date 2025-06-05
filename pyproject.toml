@@ -28,7 +28,7 @@ test = ["pytest", "roman_datamodels"]
 repository = "https://github.com/spacetelescope/stpreview.git"
 
 [project.scripts]
-stpreview = "stpreview.__main__:main"
+stpreview = "stpreview.__main__:command"
 
 [build-system]
 requires = ["setuptools >=60", "setuptools_scm[toml] >=3.4", "wheel"]

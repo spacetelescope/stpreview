@@ -38,10 +38,10 @@ options:
 
 ```
 ❯ uv run stpreview input.asdf output.png by --help
-usage: stpreview INPUT OUTPUT by [-h] factor [factor ...]
+usage: stpreview INPUT OUTPUT by [-h] FACTOR [FACTOR ...]
 
 positional arguments:
-  factor      block size by which to downsample image data
+  FACTOR      block size by which to downsample image data
 
 options:
   -h, --help  show this help message and exit
@@ -51,10 +51,10 @@ options:
 
 ```
 ❯ uv run stpreview input.asdf output.png to --help
-usage: stpreview INPUT OUTPUT to [-h] shape [shape ...]
+usage: stpreview INPUT OUTPUT to [-h] SHAPE [SHAPE ...]
 
 positional arguments:
-  shape       desired pixel resolution of output image
+  SHAPE       desired pixel resolution of output image
 
 options:
   -h, --help  show this help message and exit
