@@ -18,7 +18,6 @@ dependencies = [
   "matplotlib",
   "numpy",
   "scikit-image",
-  "typer",
 ]
 dynamic = ["version"]
 
@@ -42,10 +41,6 @@ zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.black]
-line-length = 88
-force-exclude = "^/(\n  (\n      \\.eggs\n    | \\.git\n    | \\.pytest_cache\n    | \\.tox\n  )/\n)\n"
 
 [tool.ruff]
 line-length = 88

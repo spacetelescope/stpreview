@@ -1,9 +1,8 @@
+import argparse
 from pathlib import Path
 from typing import Optional
 
 import asdf
-import typer
-from typing_extensions import Annotated
 
 from stpreview.downsample import (
     OBSERVATORIES,
@@ -13,23 +12,13 @@ from stpreview.downsample import (
 )
 from stpreview.image import north_pole_angle, write_image
 
-app = typer.Typer()
 
-
-@app.command()
 def by(
-    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
-    output: Annotated[Path, typer.Argument(help="path to output image file")],
-    factor: Annotated[
-        tuple[int, int],
-        typer.Argument(help="block size by which to downsample image data"),
-    ],
-    observatory: Annotated[
-        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
-    ] = None,
-    compass: Annotated[
-        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
-    ] = False,
+    input: Path,
+    output: Path,
+    factor: tuple[int, int],
+    observatory: Optional[str] = None,
+    compass: Optional[bool] = False,
 ):
     """
     downsample the given ASDF image by the given factor
@@ -54,19 +43,12 @@ def by(
     )
 
 
-@app.command()
 def to(
-    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
-    output: Annotated[Path, typer.Argument(help="path to output image file")],
-    shape: Annotated[
-        tuple[int, int], typer.Argument(help="desired pixel resolution of output image")
-    ],
-    observatory: Annotated[
-        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
-    ] = None,
-    compass: Annotated[
-        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
-    ] = False,
+    input: Path,
+    output: Path,
+    shape: tuple[int, int],
+    observatory: Optional[str] = None,
+    compass: Optional[bool] = False,
 ):
     """
     downsample the given ASDF image to the desired shape
@@ -95,7 +77,56 @@ def to(
 
 
 def main():
-    app()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("INPUT", type=Path, help="path to ASDF file with 2D image data")
+    parser.add_argument("OUTPUT", type=Path, help="path to output image file")
+    parser.add_argument(
+        "--observatory",
+        type=str,
+        choices=OBSERVATORIES,
+        help="(if omitted, will attempt to infer from file)",
+        required=False,
+    )
+    parser.add_argument(
+        "--compass",
+        action="store_true",
+        help="draw a north arrow on the image",
+    )
+
+    subparsers = parser.add_subparsers(dest="subcommand")
+
+    to_parser = subparsers.add_parser(
+        "to", help="downsample the given ASDF image by the given integer factor"
+    )
+    to_parser.add_argument(
+        "shape",
+        type=int,
+        nargs="+",
+        help="desired pixel shape of output image",
+    )
+    to_parser.set_defaults(func=to)
+
+    by_parser = subparsers.add_parser(
+        "by",
+        help="downsample the given ASDF image to the desired shape (the output image may be smaller than the desired shape, if no even factor exists)",
+    )
+    by_parser.add_argument(
+        "factor",
+        type=int,
+        nargs="+",
+        help="integer factor by which to downsample input data",
+    )
+    by_parser.set_defaults(func=by)
+
+    arguments = parser.parse_args()
+
+    arguments.func(
+        arguments.INPUT,
+        arguments.OUTPUT,
+        arguments.shape if arguments.subcommand == "to" else arguments.factor,
+        arguments.observatory,
+        arguments.compass,
+    )
 
 
 if __name__ == "__main__":
