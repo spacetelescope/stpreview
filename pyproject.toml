@@ -2,45 +2,38 @@
 name = "stpreview"
 description = "build downsampled previews of space telescope products"
 readme = "README.md"
-requires-python = ">=3.9"
-license = { file = "LICENSE" }
+requires-python = ">=3.11"
 authors = [{ name = "Zach Burnett", email = "zburnett@stsci.edu" }]
+license-files = ["LICENSE"]
 classifiers = [
-    'Intended Audience :: Science/Research',
-    'Topic :: Scientific/Engineering :: Astronomy',
-    'License :: OSI Approved :: BSD License',
-    'Programming Language :: Python :: 3',
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Astronomy",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "asdf",
-    "astropy",
-    "gwcs",
-    "matplotlib",
-    "numpy",
-    "scikit-image",
-    "typer",
+  "asdf",
+  "astropy",
+  "gwcs",
+  "matplotlib",
+  "numpy",
+  "scikit-image",
+  "typer",
 ]
-dynamic = ['version']
+dynamic = ["version"]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "roman_datamodels",
-]
+test = ["pytest", "roman_datamodels"]
 
 [project.urls]
-'repository' = 'https://github.com/spacetelescope/stpreview.git'
+repository = "https://github.com/spacetelescope/stpreview.git"
 
 [project.scripts]
-'stpreview' = 'stpreview.__main__:main'
+stpreview = "stpreview.__main__:main"
 
 [build-system]
-requires = [
-    'setuptools >=60',
-    'setuptools_scm[toml] >=3.4',
-    'wheel',
-]
-build-backend = 'setuptools.build_meta'
+requires = ["setuptools >=60", "setuptools_scm[toml] >=3.4", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 
@@ -52,40 +45,25 @@ where = ["src"]
 
 [tool.black]
 line-length = 88
-force-exclude = '''
-^/(
-  (
-      \.eggs
-    | \.git
-    | \.pytest_cache
-    | \.tox
-  )/
-)
-'''
+force-exclude = "^/(\n  (\n      \\.eggs\n    | \\.git\n    | \\.pytest_cache\n    | \\.tox\n  )/\n)\n"
 
 [tool.ruff]
 line-length = 88
-exclude = [
-    '.tox',
-    '.eggs',
-    'build',
-]
+exclude = [".tox", ".eggs", "build"]
 ignore = []
 
 [tool.pytest.ini_options]
-markers = [
-    "shareddata: run tests with shared data"
-]
+markers = ["shareddata: run tests with shared data"]
 
-[tool.coverage]
-run = { omit = [
-    '**/tests/*',
-] }
-report = { exclude_lines = [
-    'pragma: no cover',
-    'if self.debug:',
-    'except ImportError',
-    'raise AssertionError',
-    'raise NotImplementedError',
-    'if __name__ == "__main__":',
-] }
+[tool.coverage.run]
+omit = ["**/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if self.debug:",
+  "except ImportError",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == \"__main__\":",
+]
