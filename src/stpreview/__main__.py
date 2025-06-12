@@ -60,11 +60,11 @@ def command():
 
     if arguments.subcommand == "to":
         data = downsample_asdf_to(
-            input=arguments.INPUT, shape=arguments.shape, observatory=observatory
+            input=arguments.INPUT, shape=arguments.SHAPE, observatory=observatory
         )
     elif arguments.subcommand == "by":
         data = downsample_asdf_by(
-            input=arguments.INPUT, factor=arguments.factor, observatory=observatory
+            input=arguments.INPUT, factor=arguments.FACTOR, observatory=observatory
         )
 
     if arguments.compass:
@@ -77,7 +77,7 @@ def command():
     write_image(
         data,
         arguments.OUTPUT,
-        shape=arguments.shape if arguments.subcommand == "to" else None,
+        shape=arguments.SHAPE if arguments.subcommand == "to" else None,
         north_arrow_angle=north_arrow_angle,
     )
 
