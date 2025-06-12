@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import asdf
 import numpy
@@ -8,7 +8,7 @@ from skimage.measure import block_reduce
 OBSERVATORIES = ["roman", "jwst"]
 
 
-def known_asdf_observatory(input: Path, known: list[str] = None) -> str:
+def known_asdf_observatory(input: Path, known: Optional[list[str]] = None) -> str:
     """
     find which observatory key exists in the given ASDF file
 
@@ -34,7 +34,7 @@ def downsample_asdf_by(
     input: Path,
     factor: Union[int, tuple[int, ...]],
     func=numpy.nanmean,
-    observatory: str = None,
+    observatory: Optional[str] = None,
 ) -> numpy.ndarray:
     """
     downsample an ASDF image by the specified factor
@@ -59,17 +59,19 @@ def downsample_asdf_by(
     else:
         block_size[-2] = factor[-2]
         block_size[-1] = factor[-1]
-    block_size = tuple(block_size)
 
     # for index, dimension in enumerate(data.shape):
     #     if dimension % block_size[index] != 0:
     #         raise RuntimeError(f"{by} is not an even factor of {data.shape}")
 
-    return block_reduce(data, block_size=block_size, func=func)
+    return block_reduce(data, block_size=tuple(block_size), func=func)
 
 
 def downsample_asdf_to(
-    input: Path, shape: tuple[int, int], func=numpy.nanmean, observatory: str = None
+    input: Path,
+    shape: tuple[int, int],
+    func=numpy.nanmean,
+    observatory: Optional[str] = None,
 ) -> numpy.ndarray:
     """
     attempt to downsample an ASDF image to (near) the specified resolution

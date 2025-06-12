@@ -18,7 +18,6 @@ dependencies = [
   "matplotlib",
   "numpy",
   "scikit-image",
-  "typer",
 ]
 dynamic = ["version"]
 
@@ -29,7 +28,7 @@ test = ["pytest", "roman_datamodels"]
 repository = "https://github.com/spacetelescope/stpreview.git"
 
 [project.scripts]
-stpreview = "stpreview.__main__:main"
+stpreview = "stpreview.__main__:command"
 
 [build-system]
 requires = ["setuptools >=60", "setuptools_scm[toml] >=3.4", "wheel"]
@@ -42,10 +41,6 @@ zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.black]
-line-length = 88
-force-exclude = "^/(\n  (\n      \\.eggs\n    | \\.git\n    | \\.pytest_cache\n    | \\.tox\n  )/\n)\n"
 
 [tool.ruff]
 line-length = 88

@@ -1,9 +1,7 @@
+import argparse
 from pathlib import Path
-from typing import Optional
 
 import asdf
-import typer
-from typing_extensions import Annotated
 
 from stpreview.downsample import (
     OBSERVATORIES,
@@ -13,35 +11,64 @@ from stpreview.downsample import (
 )
 from stpreview.image import north_pole_angle, write_image
 
-app = typer.Typer()
 
+def command():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("INPUT", type=Path, help="path to ASDF file with 2D image data")
+    parser.add_argument("OUTPUT", type=Path, help="path to output image file")
+    parser.add_argument(
+        "--observatory",
+        type=str,
+        choices=OBSERVATORIES,
+        help="(if omitted, will attempt to infer from file)",
+        required=False,
+    )
+    parser.add_argument(
+        "--compass",
+        action="store_true",
+        help="draw a north arrow on the image",
+    )
 
-@app.command()
-def by(
-    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
-    output: Annotated[Path, typer.Argument(help="path to output image file")],
-    factor: Annotated[
-        tuple[int, int],
-        typer.Argument(help="block size by which to downsample image data"),
-    ],
-    observatory: Annotated[
-        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
-    ] = None,
-    compass: Annotated[
-        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
-    ] = False,
-):
-    """
-    downsample the given ASDF image by the given factor
-    """
+    subparsers = parser.add_subparsers(dest="subcommand")
 
+    to_parser = subparsers.add_parser(
+        "to", help="downsample the given ASDF image by the given integer factor"
+    )
+    to_parser.add_argument(
+        "SHAPE",
+        type=int,
+        nargs="+",
+        help="desired pixel shape of output image",
+    )
+
+    by_parser = subparsers.add_parser(
+        "by",
+        help="downsample the given ASDF image to the desired shape (the output image may be smaller than the desired shape, if no even factor exists)",
+    )
+    by_parser.add_argument(
+        "FACTOR",
+        type=int,
+        nargs="+",
+        help="integer factor by which to downsample input data",
+    )
+
+    arguments = parser.parse_args()
+
+    observatory = arguments.observatory
     if observatory is None:
-        observatory = known_asdf_observatory(input)
+        observatory = known_asdf_observatory(arguments.INPUT)
 
-    data = downsample_asdf_by(input=input, factor=factor, observatory=observatory)
+    if arguments.subcommand == "to":
+        data = downsample_asdf_to(
+            input=arguments.INPUT, shape=arguments.SHAPE, observatory=observatory
+        )
+    elif arguments.subcommand == "by":
+        data = downsample_asdf_by(
+            input=arguments.INPUT, factor=arguments.FACTOR, observatory=observatory
+        )
 
-    if compass:
-        with asdf.open(input) as file:
+    if arguments.compass:
+        with asdf.open(arguments.INPUT) as file:
             wcs = file[observatory]["meta"]["wcs"]
         north_arrow_angle = north_pole_angle(wcs).degree - 90
     else:
@@ -49,54 +76,11 @@ def by(
 
     write_image(
         data,
-        output,
+        arguments.OUTPUT,
+        shape=arguments.SHAPE if arguments.subcommand == "to" else None,
         north_arrow_angle=north_arrow_angle,
     )
-
-
-@app.command()
-def to(
-    input: Annotated[Path, typer.Argument(help="path to ASDF file with 2D image data")],
-    output: Annotated[Path, typer.Argument(help="path to output image file")],
-    shape: Annotated[
-        tuple[int, int], typer.Argument(help="desired pixel resolution of output image")
-    ],
-    observatory: Annotated[
-        Optional[str], typer.Argument(help=f"observatory, one of {OBSERVATORIES}")
-    ] = None,
-    compass: Annotated[
-        Optional[bool], typer.Option(help="whether to draw a north arrow on the image")
-    ] = False,
-):
-    """
-    downsample the given ASDF image to the desired shape
-
-    the output image may be smaller than the desired shape, if no even factor exists
-    """
-
-    if observatory is None:
-        observatory = known_asdf_observatory(input)
-
-    data = downsample_asdf_to(input=input, shape=shape, observatory=observatory)
-
-    if compass:
-        with asdf.open(input) as file:
-            wcs = file[observatory]["meta"]["wcs"]
-        north_arrow_angle = north_pole_angle(wcs).degree - 90
-    else:
-        north_arrow_angle = None
-
-    write_image(
-        data,
-        output,
-        shape=shape,
-        north_arrow_angle=north_arrow_angle,
-    )
-
-
-def main():
-    app()
 
 
 if __name__ == "__main__":
-    main()
+    command()
