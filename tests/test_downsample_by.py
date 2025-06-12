@@ -1,3 +1,5 @@
+import os
+
 import asdf
 import pytest
 from test_data import (
@@ -7,9 +9,7 @@ from test_data import (
     level2_image,
     level3_mosaic,
 )
-from typer.testing import CliRunner
 
-from stpreview.__main__ import app
 from stpreview.downsample import downsample_asdf_by
 
 OBSERVATORY = "roman"
@@ -46,9 +46,6 @@ def test_dummy_data(input, factor):
     assert result.shape == downsampled_shape
 
 
-runner = CliRunner()
-
-
 @pytest.mark.parametrize(
     "input",
     [
@@ -76,13 +73,10 @@ def test_command(input, factor, tmp_path):
 
     output = tmp_path / f"{input.stem}.png"
 
-    values = ["by", input, output]
-    if isinstance(factor, int):
-        values.append(factor)
-    else:
-        values.extend(factor)
-    status = runner.invoke(app, [str(value) for value in values])
-    assert status.exit_code == 0
+    exit_code = os.system(
+        f"stpreview --observatory roman {input} {output} by {factor if isinstance(factor, int) else ' '.join(factor)}"
+    )
+    assert exit_code == 0
 
 
 @pytest.mark.shareddata
