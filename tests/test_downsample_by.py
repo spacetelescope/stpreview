@@ -73,9 +73,9 @@ def test_command(input, factor, tmp_path):
 
     output = tmp_path / f"{input.stem}.png"
 
-    exit_code = os.system(
-        f"stpreview --observatory roman {input} {output} by {' '.join(str(v) for v in factor)}"
-    )
+    command = f"stpreview --observatory roman {input} {output} by {' '.join(str(v) for v in factor)}"
+    print(command)
+    exit_code = os.system(command)
     assert exit_code == 0
 
 

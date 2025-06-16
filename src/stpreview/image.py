@@ -76,7 +76,8 @@ def write_image(
     """
 
     if normalization is None:
-        normalization = percentile_normalization(data, percentile=90)
+        if numpy.any(~numpy.isnan(data)):
+            normalization = percentile_normalization(data, percentile=90)
 
     if colormap is None:
         colormap = "afmhot"
