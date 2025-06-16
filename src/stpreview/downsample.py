@@ -52,6 +52,11 @@ def downsample_asdf_by(
     with asdf.open(input, memmap=True) as file:
         data = file[observatory]["data"]
 
+        # if error array is present, set nodata values to NaN
+        if "err" in file[observatory]:
+            err = file[observatory]["err"]
+            data = numpy.where(~numpy.isfinite(err) | (err <= 0), numpy.nan, data)
+
         block_size: list[int] = list(data.shape)
         if isinstance(factor, int):
             block_size[-2] = factor
