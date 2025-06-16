@@ -68,9 +68,9 @@ def command():
         )
 
     if arguments.compass:
-        with asdf.open(arguments.INPUT) as file:
+        with asdf.open(arguments.INPUT, memmap=True) as file:
             wcs = file[observatory]["meta"]["wcs"]
-        north_arrow_angle = north_pole_angle(wcs).degree - 90
+            north_arrow_angle = north_pole_angle(wcs).degree - 90
     else:
         north_arrow_angle = None
 
