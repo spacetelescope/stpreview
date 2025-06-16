@@ -20,7 +20,7 @@ def known_asdf_observatory(input: Path, known: Optional[list[str]] = None) -> st
     if known is None:
         known = OBSERVATORIES
 
-    with asdf.open(input) as file:
+    with asdf.open(input, memmap=True) as file:
         for name in known:
             if name in file:
                 return name
@@ -49,22 +49,22 @@ def downsample_asdf_by(
     if observatory is None:
         observatory = known_asdf_observatory(input)
 
-    with asdf.open(input) as file:
-        data = file[observatory]["data"].copy()
+    with asdf.open(input, memmap=True) as file:
+        data = file[observatory]["data"]
 
-    block_size: list[int] = list(data.shape)
-    if isinstance(factor, int):
-        block_size[-2] = factor
-        block_size[-1] = factor
-    else:
-        block_size[-2] = factor[-2]
-        block_size[-1] = factor[-1]
+        block_size: list[int] = list(data.shape)
+        if isinstance(factor, int):
+            block_size[-2] = factor
+            block_size[-1] = factor
+        else:
+            block_size[-2] = factor[-2]
+            block_size[-1] = factor[-1]
 
-    # for index, dimension in enumerate(data.shape):
-    #     if dimension % block_size[index] != 0:
-    #         raise RuntimeError(f"{by} is not an even factor of {data.shape}")
+        # for index, dimension in enumerate(data.shape):
+        #     if dimension % block_size[index] != 0:
+        #         raise RuntimeError(f"{by} is not an even factor of {data.shape}")
 
-    return block_reduce(data, block_size=tuple(block_size), func=func)
+        return block_reduce(data, block_size=tuple(block_size), func=func)
 
 
 def downsample_asdf_to(
@@ -86,7 +86,7 @@ def downsample_asdf_to(
     if observatory is None:
         observatory = known_asdf_observatory(input)
 
-    with asdf.open(input) as file:
+    with asdf.open(input, memmap=True) as file:
         original_shape = file[observatory]["data"].shape
 
     factor = tuple(
