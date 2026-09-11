@@ -22,7 +22,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest", "roman_datamodels"]
+test = ["pytest>=9.0", "roman_datamodels"]
 
 [project.urls]
 repository = "https://github.com/spacetelescope/stpreview.git"
@@ -47,7 +47,7 @@ line-length = 88
 exclude = [".tox", ".eggs", "build"]
 ignore = []
 
-[tool.pytest.ini_options]
+[tool.pytest]
 markers = ["shareddata: run tests with shared data"]
 
 [tool.coverage.run]
