@@ -86,7 +86,8 @@ def write_image(
         shape = data.shape
 
     dpi = 100
-    figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
+    # `shape` is (rows, columns), but `figsize` is (width, height)
+    figure = pyplot.figure(figsize=numpy.array(shape)[::-1] / dpi)
     # fill the whole figure with the image, leaving no margin
     axis = figure.add_axes((0, 0, 1, 1))
     axis.imshow(data, norm=normalization, cmap=colormap, origin="lower")
