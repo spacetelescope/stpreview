@@ -87,7 +87,8 @@ def write_image(
 
     dpi = 100
     figure = pyplot.figure(figsize=numpy.array(shape) / dpi)
-    axis = figure.add_subplot(1, 1, 1)
+    # fill the whole figure with the image, leaving no margin
+    axis = figure.add_axes((0, 0, 1, 1))
     axis.imshow(data, norm=normalization, cmap=colormap, origin="lower")
 
     if north_arrow_angle is not None:
@@ -106,4 +107,4 @@ def write_image(
         axis.add_artist(arrow)
 
     pyplot.axis("off")
-    figure.savefig(output, dpi=dpi, bbox_inches="tight")
+    figure.savefig(output, dpi=dpi, bbox_inches="tight", pad_inches=0)
