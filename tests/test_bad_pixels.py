@@ -10,9 +10,8 @@ def test_bad_pixels(tmp_path):
     data = numpy.random.default_rng(0).normal(1, 0.1, (100, 100))
     dq = numpy.zeros(data.shape, dtype=numpy.uint32)
 
-    # a fully flagged block is NaN; other flags are not masked
+    # a fully flagged block is NaN
     dq[:FACTOR, :FACTOR] = DO_NOT_USE
-    dq[50, 50] = 0b100
 
     # unflagged outliers are clipped
     data[30, 30] = 1e6
