@@ -79,7 +79,7 @@ def downsample_asdf_by(
 
         # if DQ array is present (not in L3), set `DO_NOT_USE` pixels to NaN
         if "dq" in file[observatory]:
-            dq = numpy.asarray(file[observatory]["dq"])
+            dq = file[observatory]["dq"]
             data = numpy.where((dq & DO_NOT_USE) != 0, numpy.nan, data)
 
         # if error array is present, set nodata values to NaN
