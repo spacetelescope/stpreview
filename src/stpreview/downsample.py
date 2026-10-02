@@ -7,6 +7,31 @@ from skimage.measure import block_reduce
 
 OBSERVATORIES = ["roman", "jwst"]
 
+# bit 0 of the DQ array is `DO_NOT_USE` for both Roman and JWST
+DO_NOT_USE = 0b1
+
+CLIP_PERCENTILES = (1, 99)
+
+
+def clip_to_percentiles(
+    data: numpy.ndarray, percentiles: tuple[float, float] = CLIP_PERCENTILES
+) -> numpy.ndarray:
+    """
+    replace values outside the given percentiles with the percentile values,
+    so that isolated extreme pixels do not dominate a downsampled block
+
+    :param data: image data; NaN values are ignored and preserved
+    :param percentiles: lower and upper percentiles to which to clip
+    :returns: clipped image array
+    """
+
+    finite = data[numpy.isfinite(data)]
+    if finite.size == 0:
+        return data
+
+    lower, upper = numpy.percentile(finite, percentiles)
+    return numpy.clip(data, lower, upper)
+
 
 def known_asdf_observatory(input: Path, known: Optional[list[str]] = None) -> str:
     """
@@ -52,10 +77,18 @@ def downsample_asdf_by(
     with asdf.open(input, memmap=True) as file:
         data = file[observatory]["data"]
 
+        # if DQ array is present (not in L3), set `DO_NOT_USE` pixels to NaN
+        if "dq" in file[observatory]:
+            dq = numpy.asarray(file[observatory]["dq"])
+            data = numpy.where((dq & DO_NOT_USE) != 0, numpy.nan, data)
+
         # if error array is present, set nodata values to NaN
         if "err" in file[observatory]:
             err = file[observatory]["err"]
             data = numpy.where(~numpy.isfinite(err) | (err <= 0), numpy.nan, data)
+
+        # clip outliers so they do not corrupt an entire block
+        data = clip_to_percentiles(data)
 
         block_size: list[int] = list(data.shape)
         if isinstance(factor, int):
