@@ -1,28 +1,31 @@
-name: test
+name: tests
 
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
   push:
     branches:
       - main
-    tags:
-      - '*'
-  pull_request:
-    branches:
-      - main
+    tags:  
+      - "*"
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   test:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
-    with:
-      envs: |
-        - linux: py311-parallel
-        - linux: py312-parallel
-        - linux: py3-cov-parallel
-          coverage: codecov
-          pytest-results-summary: true
-        - macos: py3-parallel
+    name: run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: wntrblm/nox@5a277b752f6094150e25237d47c34168e2b7526e # 2026.02.09
+      - run: nox -s test

@@ -1,0 +1,24 @@
+{
+  "template": "https://github.com/spacetelescope/stsci-package-template",
+  "commit": "66493a33c6dc744f449782dd5516fd2d75884ce7",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "stpreview",
+      "package_name": "stpreview",
+      "repository_url": "https://github.com/spacetelescope/stpreview",
+      "git_username": "zacharyburnett",
+      "project_description": "Space Telescope Product Downsampling",
+      "manage_changelog_with_towncrier": false,
+      "publish_docs_to": "none",
+      "task_runner": "nox",
+      "python_version": ">=3.11",
+      "python_c_extensions": false,
+      "python_build_backend": "setuptools",
+      "crds_observatory": "none",
+      "_template": "https://github.com/spacetelescope/stsci-package-template",
+      "_commit": "66493a33c6dc744f449782dd5516fd2d75884ce7"
+    }
+  },
+  "directory": "python-package"
+}
