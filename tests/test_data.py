@@ -10,9 +10,9 @@ if not DATA_DIRECTORY.exists():
 def level1_science_raw(data_directory) -> Path:
     filename = data_directory / "level1_science_raw.asdf"
     if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level1_science_raw
+        from roman_datamodels.datamodels import ScienceRawModel
 
-        mk_level1_science_raw(filepath=filename)
+        ScienceRawModel.create_fake_data(shape=(8, 4096, 4096)).save(filename)
 
     return filename
 
@@ -20,9 +20,9 @@ def level1_science_raw(data_directory) -> Path:
 def level2_image(data_directory) -> Path:
     filename = data_directory / "level2_image.asdf"
     if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level2_image
+        from roman_datamodels.datamodels import ImageModel
 
-        mk_level2_image(filepath=filename)
+        ImageModel.create_fake_data(shape=(4088, 4088)).save(filename)
 
     return filename
 
@@ -30,8 +30,8 @@ def level2_image(data_directory) -> Path:
 def level3_mosaic(data_directory) -> Path:
     filename = data_directory / "level3_mosaic.asdf"
     if not filename.exists():
-        from roman_datamodels.maker_utils import mk_level3_mosaic
+        from roman_datamodels.datamodels import MosaicModel
 
-        mk_level3_mosaic(filepath=filename)
+        MosaicModel.create_fake_data(shape=(5000, 5000)).save(filename)
 
     return filename
