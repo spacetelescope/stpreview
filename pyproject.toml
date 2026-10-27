@@ -3,13 +3,13 @@ name = "stpreview"
 description = "build downsampled previews of space telescope products"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Zach Burnett", email = "zburnett@stsci.edu" }]
 license-files = ["LICENSE"]
+authors = [{ name = "Zach Burnett", email = "zburnett@stsci.edu" }]
 classifiers = [
   "Intended Audience :: Science/Research",
-  "Topic :: Scientific/Engineering :: Astronomy",
   "License :: OSI Approved :: BSD License",
   "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Astronomy",
 ]
 dependencies = [
   "asdf",
@@ -21,34 +21,19 @@ dependencies = [
 ]
 dynamic = ["version"]
 
-[project.optional-dependencies]
-test = ["pytest>=9.0", "roman_datamodels"]
-
 [project.urls]
 repository = "https://github.com/spacetelescope/stpreview.git"
 
 [project.scripts]
 stpreview = "stpreview.__main__:command"
 
+[dependency-groups]
+contrib = ["pyrefly", "ruff"]
+test = ["pytest>=9.0", "roman_datamodels"]
+
 [build-system]
-requires = ["setuptools >=60", "setuptools_scm[toml] >=3.4", "wheel"]
+requires = ["setuptools_scm[toml] >=3.4", "setuptools >=60", "wheel"]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-
-[tool.setuptools]
-zip-safe = false
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.ruff]
-line-length = 88
-exclude = [".tox", ".eggs", "build"]
-ignore = []
-
-[tool.pytest]
-markers = ["shareddata: run tests with shared data"]
 
 [tool.coverage.run]
 omit = ["**/tests/*"]
@@ -62,3 +47,18 @@ exclude_lines = [
   "raise NotImplementedError",
   "if __name__ == \"__main__\":",
 ]
+
+[tool.pytest]
+markers = ["shareddata: run tests with shared data"]
+
+[tool.ruff]
+line-length = 127
+exclude = [".tox", ".eggs", "build"]
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
