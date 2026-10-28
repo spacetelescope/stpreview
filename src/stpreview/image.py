@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional, Union
 
 import astropy
 import astropy.visualization
@@ -66,18 +65,17 @@ def percentile_normalization(
 def write_image(
     data: numpy.ndarray,
     output: Path,
-    shape: Optional[tuple[int, int]] = None,
-    normalization: Optional[astropy.visualization.ImageNormalize] = None,
-    colormap: Optional[Union[str, Colormap]] = None,
-    north_arrow_angle: Optional[float] = None,
+    shape: tuple[int, int] | None = None,
+    normalization: astropy.visualization.ImageNormalize | None = None,
+    colormap: str | Colormap | None = None,
+    north_arrow_angle: float | None = None,
 ):
     """
     write data as an image to the given path
     """
 
-    if normalization is None:
-        if numpy.any(~numpy.isnan(data)):
-            normalization = percentile_normalization(data, percentile=90)
+    if normalization is None and numpy.any(~numpy.isnan(data)):
+        normalization = percentile_normalization(data, percentile=90)
 
     if colormap is None:
         colormap = "afmhot"
