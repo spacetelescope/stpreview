@@ -1,5 +1,5 @@
 <a href="https://stsci.edu">
-  <img src="docs/_static/stsci_pri_combo_mark_horizonal_white_bkgd.png" alt="Space Telescope Science Institute" width="83%" style="margin-left: auto;"/>
+  <img src="https://github.com/spacetelescope/stsci-package-template/blob/0c4b13779e02ff9b8fb3585615e26d51cadcc14b/docs/_static/stsci_pri_combo_mark_horizonal_white_bkgd.png" alt="Space Telescope Science Institute" width="83%" style="margin-left: auto;"/>
 </a>
 
 # stpreview
@@ -7,7 +7,7 @@
 ## Space Telescope Product Downsampling
 
 [![build](https://github.com/spacetelescope/stpreview/actions/workflows/build.yml/badge.svg)](https://github.com/spacetelescope/stpreview/actions/workflows/build.yml)
-[![test](https://github.com/spacetelescope/stpreview/actions/workflows/tests.yml/badge.svg)](https://github.com/spacetelescope/stpreview/actions/workflows/tests.yml)
+[![tests](https://github.com/spacetelescope/stpreview/actions/workflows/tests.yml/badge.svg)](https://github.com/spacetelescope/stpreview/actions/workflows/tests.yml)
 [![Powered by STScI](https://img.shields.io/badge/powered%20by-STScI-blue.svg?colorA=707170&colorB=3e8ddd&style=flat)](https://www.stsci.edu)
 [![Powered by Astropy](http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat)](http://www.astropy.org/)
 
