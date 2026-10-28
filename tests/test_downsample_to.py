@@ -58,9 +58,7 @@ def test_command(input, shape, tmp_path):
         original_shape = file[OBSERVATORY]["data"].shape
 
     if len(original_shape) != len(shape):
-        shape = numpy.concatenate(
-            [[original_shape[index] for index in range(len(original_shape) - 2)], shape]
-        )
+        shape = numpy.concatenate([[original_shape[index] for index in range(len(original_shape) - 2)], shape])
 
     assert numpy.any(original_shape != shape)
 
@@ -73,16 +71,10 @@ def test_command(input, shape, tmp_path):
 
 
 @pytest.mark.shareddata
-@pytest.mark.skipif(
-    not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory"
-)
+@pytest.mark.skipif(not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory")
 @pytest.mark.parametrize(
     "input",
-    [
-        filename
-        for filename in SHARED_DATA_DIRECTORY.iterdir()
-        if filename.suffix.lower() == ".asdf"
-    ]
+    [filename for filename in SHARED_DATA_DIRECTORY.iterdir() if filename.suffix.lower() == ".asdf"]
     if SHARED_DATA_DIRECTORY.exists()
     else [],
 )

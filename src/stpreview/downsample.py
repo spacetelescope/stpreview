@@ -23,9 +23,7 @@ def known_asdf_observatory(input: Path, known: list[str] | None = None) -> str:
         for name in known:
             if name in file:
                 return name
-        raise KeyError(
-            f"no known observatory found in file (out of {OBSERVATORIES})"
-        )
+        raise KeyError(f"no known observatory found in file (out of {OBSERVATORIES})")
 
 
 def downsample_asdf_by(
@@ -92,8 +90,6 @@ def downsample_asdf_to(
     with asdf.open(input, memmap=True) as file:
         original_shape = file[observatory]["data"].shape
 
-    factor = tuple(
-        numpy.ceil(numpy.array(original_shape) / numpy.array(shape)).astype(int)
-    )
+    factor = tuple(numpy.ceil(numpy.array(original_shape) / numpy.array(shape)).astype(int))
 
     return downsample_asdf_by(input=input, factor=factor, func=func)
