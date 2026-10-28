@@ -28,16 +28,12 @@ def north_pole_angle(
 
     pixel_coordinate = wcs.pixel_to_world(*pixel)
     pixel_coordinate = pixel_coordinate.transform_to("icrs")
-    offset_coordinate = pixel_coordinate.directional_offset_by(
-        0.0 * astropy.units.deg, ddec
-    )
+    offset_coordinate = pixel_coordinate.directional_offset_by(0.0 * astropy.units.deg, ddec)
 
     north_pixel = numpy.asarray(wcs.world_to_pixel(offset_coordinate))
     distance = north_pixel - numpy.asarray(pixel)
 
-    return astropy.coordinates.Angle(
-        numpy.rad2deg(numpy.arctan2(distance[1], distance[0])) * astropy.units.deg
-    )
+    return astropy.coordinates.Angle(numpy.rad2deg(numpy.arctan2(distance[1], distance[0])) * astropy.units.deg)
 
 
 def percentile_normalization(
@@ -55,9 +51,7 @@ def percentile_normalization(
     interval = astropy.visualization.PercentileInterval(percentile)
     vmin, vmax = interval.get_limits(data)
 
-    normalization = astropy.visualization.ImageNormalize(
-        vmin=vmin, vmax=vmax, stretch=stretch
-    )
+    normalization = astropy.visualization.ImageNormalize(vmin=vmin, vmax=vmax, stretch=stretch)
 
     return normalization
 

@@ -32,12 +32,8 @@ def test_dummy_data(input, factor):
         original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(
-        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
-    )
-    downsampled_shape[-1] = int(
-        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
-    )
+    downsampled_shape[-2] = int(original_shape[-2] / (factor if isinstance(factor, int) else factor[-2]))
+    downsampled_shape[-1] = int(original_shape[-1] / (factor if isinstance(factor, int) else factor[-1]))
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
@@ -62,12 +58,8 @@ def test_command(input, factor, tmp_path):
         original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(
-        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
-    )
-    downsampled_shape[-1] = int(
-        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
-    )
+    downsampled_shape[-2] = int(original_shape[-2] / (factor if isinstance(factor, int) else factor[-2]))
+    downsampled_shape[-1] = int(original_shape[-1] / (factor if isinstance(factor, int) else factor[-1]))
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 
@@ -80,16 +72,10 @@ def test_command(input, factor, tmp_path):
 
 
 @pytest.mark.shareddata
-@pytest.mark.skipif(
-    not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory"
-)
+@pytest.mark.skipif(not SHARED_DATA_DIRECTORY.exists(), reason="can't reach shared data directory")
 @pytest.mark.parametrize(
     "input",
-    [
-        filename
-        for filename in SHARED_DATA_DIRECTORY.iterdir()
-        if filename.suffix.lower() == ".asdf"
-    ]
+    [filename for filename in SHARED_DATA_DIRECTORY.iterdir() if filename.suffix.lower() == ".asdf"]
     if SHARED_DATA_DIRECTORY.exists()
     else [],
 )
@@ -102,12 +88,8 @@ def test_sample_data(input, factor):
         original_shape = file[OBSERVATORY]["data"].shape
 
     downsampled_shape = [1 for _ in original_shape]
-    downsampled_shape[-2] = int(
-        original_shape[-2] / (factor if isinstance(factor, int) else factor[-2])
-    )
-    downsampled_shape[-1] = int(
-        original_shape[-1] / (factor if isinstance(factor, int) else factor[-1])
-    )
+    downsampled_shape[-2] = int(original_shape[-2] / (factor if isinstance(factor, int) else factor[-2]))
+    downsampled_shape[-1] = int(original_shape[-1] / (factor if isinstance(factor, int) else factor[-1]))
     downsampled_shape = tuple(downsampled_shape)
     assert original_shape != downsampled_shape
 

@@ -31,9 +31,7 @@ def command():
 
     subparsers = parser.add_subparsers(dest="subcommand")
 
-    to_parser = subparsers.add_parser(
-        "to", help="downsample the given ASDF image by the given integer factor"
-    )
+    to_parser = subparsers.add_parser("to", help="downsample the given ASDF image by the given integer factor")
     to_parser.add_argument(
         "SHAPE",
         type=int,
@@ -59,13 +57,9 @@ def command():
         observatory = known_asdf_observatory(arguments.INPUT)
 
     if arguments.subcommand == "to":
-        data = downsample_asdf_to(
-            input=arguments.INPUT, shape=arguments.SHAPE, observatory=observatory
-        )
+        data = downsample_asdf_to(input=arguments.INPUT, shape=arguments.SHAPE, observatory=observatory)
     elif arguments.subcommand == "by":
-        data = downsample_asdf_by(
-            input=arguments.INPUT, factor=arguments.FACTOR, observatory=observatory
-        )
+        data = downsample_asdf_by(input=arguments.INPUT, factor=arguments.FACTOR, observatory=observatory)
 
     if arguments.compass:
         with asdf.open(arguments.INPUT, memmap=True) as file:
