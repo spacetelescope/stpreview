@@ -11,7 +11,7 @@ nox.options.error_on_external_run = True
     default=False,
 )
 def format(session):
-    session.install("-e", ".--group=contrib")
+    session.install("-e", ".", "--group=contrib")
     session.run("ruff", "format", ".")
     session.run("ruff", "check", ".", "--fix")
     session.run("ruff", "check", ".", "--fix", "--select", "I")
