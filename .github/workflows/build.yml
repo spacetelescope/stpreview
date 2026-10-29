@@ -51,3 +51,5 @@ jobs:
           merge-multiple: true
       # To upload to PyPI without a token, add this workflow file as a Trusted Publisher in the project settings on the PyPI website
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          password: ${{ secrets.PYPI_PASSWORD_STSCI_MAINTAINER }}
