@@ -7,14 +7,14 @@ FACTOR = 20
 
 
 def test_bad_pixels(tmp_path):
-    data = numpy.random.default_rng(0).normal(1, 0.1, (200, 200))
+    data = numpy.random.default_rng(0).normal(1, 0.1, (100, 100))
     dq = numpy.zeros(data.shape, dtype=numpy.uint32)
 
     # a fully flagged block is NaN
     dq[:FACTOR, :FACTOR] = DO_NOT_USE
 
-    # unflagged outliers are clipped
-    data[30, 30] = 1e6
+    # an unflagged outlier is clipped; test the low end, since clipping a single
+    # high outlier at the 99.999th percentile would need > 10^5 pixels
     data[70, 70] = -1e6
 
     input = tmp_path / "bad_pixels.asdf"

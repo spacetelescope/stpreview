@@ -9,7 +9,7 @@ OBSERVATORIES = ["roman", "jwst"]
 # bit 0 of the DQ array is `DO_NOT_USE` for both Roman and JWST
 DO_NOT_USE = 0b1
 
-CLIP_PERCENTILES = (0.1, 99.99)
+CLIP_PERCENTILES = (0.1, 99.999)
 
 
 def clip_to_percentiles(data: numpy.ndarray, percentiles: tuple[float, float] = CLIP_PERCENTILES) -> numpy.ndarray:
