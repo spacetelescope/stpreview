@@ -9,12 +9,10 @@ OBSERVATORIES = ["roman", "jwst"]
 # bit 0 of the DQ array is `DO_NOT_USE` for both Roman and JWST
 DO_NOT_USE = 0b1
 
-CLIP_PERCENTILES = (1, 99)
+CLIP_PERCENTILES = (0.1, 99.99)
 
 
-def clip_to_percentiles(
-    data: numpy.ndarray, percentiles: tuple[float, float] = CLIP_PERCENTILES
-) -> numpy.ndarray:
+def clip_to_percentiles(data: numpy.ndarray, percentiles: tuple[float, float] = CLIP_PERCENTILES) -> numpy.ndarray:
     """
     replace values outside the given percentiles with the percentile values,
     so that isolated extreme pixels do not dominate a downsampled block

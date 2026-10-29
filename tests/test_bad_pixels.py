@@ -7,7 +7,7 @@ FACTOR = 20
 
 
 def test_bad_pixels(tmp_path):
-    data = numpy.random.default_rng(0).normal(1, 0.1, (100, 100))
+    data = numpy.random.default_rng(0).normal(1, 0.1, (200, 200))
     dq = numpy.zeros(data.shape, dtype=numpy.uint32)
 
     # a fully flagged block is NaN
